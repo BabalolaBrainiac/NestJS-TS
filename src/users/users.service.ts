@@ -11,5 +11,7 @@ export class UserService {
     const walletId = nanoid();
     const newUser = new User(userId, name, email, walletId, 0);
     this.Users.push(newUser);
+    console.log(`New User Created with the UserId ${newUser.id}`);
+    return newUser;
   }
 }
