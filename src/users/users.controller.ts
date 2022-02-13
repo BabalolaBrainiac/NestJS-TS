@@ -11,4 +11,10 @@ export class UserController {
   createUser(@Body('name') name: string, @Body('email') email: string): any {
     this.userService.createUser(name, email);
   }
+
+  //Get a List of all Users
+  @Get('list')
+  fetchUsers(): User[] {
+    return this.userService.fetchUsers();
+  }
 }

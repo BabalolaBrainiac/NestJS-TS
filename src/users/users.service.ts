@@ -14,4 +14,8 @@ export class UserService {
     console.log(`New User Created with the UserId ${newUser.id}`);
     return newUser;
   }
+
+  fetchUsers() {
+    return [...this.Users];
+  }
 }
