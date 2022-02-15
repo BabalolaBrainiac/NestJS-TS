@@ -1,7 +1,13 @@
-import { Controller } from "@nestjs/common";
-
+import { Controller, Get, Post } from '@nestjs/common';
+import { AgentCreateService } from './agent.service';
 
 @Controller('agents')
 export class AgentController {
-    constructor
+    constructor(private readonly agentService: AgentCreateService) { };
+    
+    @Post('create') {
+       
+    
+  }
+
 }

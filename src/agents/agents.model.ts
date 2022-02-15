@@ -13,6 +13,6 @@ export class Agent {
     public readonly email: string,
     public readonly password: string,
     public readonly authLevel: AuthenticationLevel,
-    public readonly ops: any[],
+    public readonly ops: string[],
   ) {}
 }
