@@ -12,7 +12,6 @@ export class TransactionService {
   private readonly Transactions: Transaction[] = [];
 
   createTransaction(
-    id: string,
     type: TransactionType,
     value: number,
     date: Date,

@@ -1,5 +1,18 @@
+import { TransactionType } from 'src/transactions/transactions.model';
+
+export enum AuthenticationLevel {
+  basicPermission,
+  advancedPermissions,
+  allPermissions,
+}
 
 export class Agent {
-  name: string;
-  email: string;
+  constructor(
+    public readonly id: string,
+    public readonly name: string,
+    public readonly email: string,
+    public readonly password: string,
+    public readonly authLevel: AuthenticationLevel,
+    public readonly ops: any[],
+  ) {}
 }
