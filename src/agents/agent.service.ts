@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Agent } from './agents.model';
-import bcrypt from 'bcrypt';
-import { nanoid } from 'nanoid';
-import { AuthenticationLevel } from './agents.model';
-import { agent } from 'supertest';
+import * as bcrypt from 'bcrypt';
+// import { nanoid } from 'nanoid';
+// import { AuthenticationLevel } from './agents.model';
+// import { agent } from 'supertest';
 
 @Injectable()
 export class AgentCreateService {
