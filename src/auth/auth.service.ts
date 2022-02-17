@@ -1,4 +1,31 @@
 import { Injectable } from '@nestjs/common';
+import { AgentCreateService } from 'src/agents/agent.service';
+import { AgentOperationService } from 'src/agents/agent.service';
+import bcrypt from 'bcrypt';
 
 @Injectable()
-export class AuthService {}
+export class AuthService {
+  constructor(private agentCreate: AgentCreateService) {}
+
+  async verifyPassword(
+    userPassword: string,
+    hashedPassword: Promise<string>,
+  ): Promise<boolean> {
+    const verPass = await this.agentCreate.comparePassword(
+      userPassword,
+      hashedPassword,
+    );
+    return verPass;
+  }
+
+  async validateUser(id: string, password: string) {
+    const agent = await this.agentCreate.findAgent(id);
+    const valPass = await this.verifyPassword(password, agent.password);
+
+    if (agent && valPass === false) {
+      return 'Password is Incorrect. Verify password and try again';
+    } else if (agent && valPass === true) {
+      return agent;
+    }
+  }
+}

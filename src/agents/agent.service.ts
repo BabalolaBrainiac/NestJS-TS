@@ -17,7 +17,7 @@ export class AgentCreateService {
   }
 
   //Compare Password
-  async comarePassword(password, hashedPassword): Promise<boolean> {
+  async comparePassword(password, hashedPassword): Promise<boolean> {
     const ifValid = await bcrypt.compare(password, hashedPassword);
     return ifValid;
   }
@@ -45,7 +45,7 @@ export class AgentCreateService {
   // }
 
   //Sample Agent
-  private readonly agentSamples = [
+  public readonly agentSamples = [
     {
       id: '001',
       name: 'Agent001',
@@ -73,8 +73,8 @@ export class AgentCreateService {
   ];
 
   //Test find agent
-  async findAgent(name: string): Promise<Agent | undefined> {
-    return this.agentSamples.find((name) => agent.name === name);
+  async findAgent(id: string) {
+    return this.agentSamples.find((agent) => agent.id === id);
   }
 }
 
