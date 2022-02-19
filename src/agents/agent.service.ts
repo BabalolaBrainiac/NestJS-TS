@@ -45,7 +45,7 @@ export class AgentCreateService {
   // }
 
   //Sample Agent
-  public readonly agentSamples = [
+  public agentSamples = [
     {
       id: '001',
       name: 'Agent001',

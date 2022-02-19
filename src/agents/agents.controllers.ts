@@ -1,7 +1,14 @@
-import { Controller, Get, Post } from '@nestjs/common';
-import { AgentCreateService } from './agent.service';
+import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
+import { LocalAuthGuard } from 'src/auth/auth-local';
 
-@Controller('agents')
+@Controller('agent')
 export class AgentController {
-  constructor(private readonly agentService: AgentCreateService) {}
+  //Instantiate Auth service
+  constructor(private authService: AuthService) {}
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
+  async login(@Request() req) {
+    return this.authService.login(req.agent);
+  }
 }
