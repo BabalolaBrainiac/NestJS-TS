@@ -4,15 +4,14 @@ import { AgentModule } from 'src/agents/agents.module';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtKey } from './constants';
+import { jwtSecret } from './constants';
 import { JwtStrategy } from './jwt.strategy';
-
 @Module({
   imports: [
     AgentModule,
     PassportModule,
     JwtModule.register({
-      secret: jwtKey.secretKey,
+      secret: jwtSecret.secretKey,
       signOptions: { expiresIn: '60s' },
     }),
   ],

@@ -12,31 +12,34 @@ export class AuthService {
 
   async verifyPassword(
     userPassword: string,
-    hashedPassword: Promise<string>,
+    hashedPassword: string,
   ): Promise<boolean> {
-    const newHashed = (await hashedPassword).toString();
-    const verPass = await this.agentCreate.comparePassword(
+    // const stringedPassword = await hashedPassword.toString();
+    const verifiedPassword = await this.agentCreate.comparePassword(
       userPassword,
-      newHashed,
+      hashedPassword,
     );
-    return verPass;
+    return verifiedPassword;
   }
 
   async validateAgent(id: string, password: string) {
     const agent = await this.agentCreate.findAgent(id);
-    const valPass = await this.verifyPassword(password, agent.password);
+    const stringPass = (await agent.password).toString();
+    const valPass = await this.verifyPassword(password, stringPass);
     if (agent && valPass === false) {
       return 'Password is Incorrect. Verify password and try again';
     } else if (agent && valPass === true) {
       console.log('Agent Validation is Successful');
+      const { password, ...result } = agent;
       return agent;
     }
+    console.log('Could not return user');
   }
 
-  async login(agent: Agent) {
-    const agentPayload = { sub: agent.id, name: agent.name };
+  async login(user: Agent) {
+    const payload = { sub: user.id, name: user.name };
     return {
-      access_token: this.jwtService.sign(agentPayload),
+      accesstoken: this.jwtService.sign(payload),
     };
   }
 }

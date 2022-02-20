@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Agent } from './agents.model';
 import * as bcrypt from 'bcrypt';
 // import { nanoid } from 'nanoid';
-// import { AuthenticationLevel } from './agents.model';
-// import { agent } from 'supertest';
+import { AuthenticationLevel } from './agents.model';
 
 @Injectable()
 export class AgentCreateService {
@@ -74,7 +73,9 @@ export class AgentCreateService {
 
   //Test find agent
   async findAgent(id: string) {
-    return this.agentSamples.find((agent) => agent.id === id);
+    console.log('Finding agent...');
+    const agent = this.agentSamples.find((agent) => agent.id === id);
+    return agent;
   }
 }
 
