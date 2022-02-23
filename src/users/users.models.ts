@@ -1,11 +1,9 @@
-
-
-// export class User {
-//   constructor(
-//     public id: string,
-//     public name: string,
-//     public email: string,
-//     public walletId: string,
-//     public walletBalance: number,
-//   ) {}
-// }
+export class User {
+  constructor(
+    public id: string,
+    public name: string,
+    public email: string,
+    public walletId: string,
+    public walletBalance: number,
+  ) {}
+}
