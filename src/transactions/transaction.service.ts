@@ -32,14 +32,65 @@ export class TransactionService {
     this.Transactions.push(newTransaction);
   }
 
-  findTransaction(id: string): any {}
+  async findSingleTransaction(transactionId: string): Promise<Transaction> {
+    const tx = await this.Transactions.find[transactionId];
+    return tx;
+  }
+
+  async findAllTransactions(): Promise<Transaction[]> {
+    return [...this.Transactions];
+  }
+
+  async debit(
+    transactionId: number,
+    txStatus: TransactionStatus,
+    value: number,
+    sender: User,
+  ): Promise<number> {
+    const tx = await this.Transactions.find[transactionId];
+    if (!tx) {
+      console.error('Transaction Not Found');
+    } else if (
+      tx &&
+      txStatus === TransactionStatus.pending &&
+      sender.walletBalance < value
+    ) {
+      console.error('Insufficient Sender Funds');
+    } else if (
+      tx &&
+      tx.status === TransactionStatus.pending &&
+      sender.walletBalance >= value
+    ) {
+      {
+        const newBal = (await sender.walletBalance) - value;
+        sender.walletBalance = newBal;
+        return sender.walletBalance;
+      }
+    }
+  }
+
+  async credit(
+    transactionId: number,
+    txStatus: TransactionStatus,
+    value: number,
+    receiver: User,
+  ): Promise<number> {
+    const tx = await this.Transactions.find[transactionId];
+    if (!tx) {
+      console.error('Transaction Not Found');
+    } else if (tx && txStatus === TransactionStatus.pending) {
+      const newBal = receiver.walletBalance + value;
+      receiver.walletBalance = newBal;
+      return receiver.walletBalance;
+    }
+  }
 
   sendAsset(
     sender: User,
     receiver: User,
     value: number,
     date: Date,
-  ): TransactionStatus {
+  ): Transaction {
     const transactionId = nanoid();
     const trnsDate = new Date();
     const creditTransaction = new Transaction(
@@ -51,32 +102,7 @@ export class TransactionService {
       sender,
       receiver,
     );
-    return TransactionStatus.pending;
+    return creditTransaction;
   }
-
-  async debit(
-    txStatus: TransactionStatus,
-    value: number,
-    sender: User,
-  ): Promise<number> {
-    if (
-      (txStatus = TransactionStatus.pending && sender.walletBalance >= value)
-    ) {
-      const newBal = sender.walletBalance - value;
-      sender.walletBalance = newBal;
-      return newBal;
-    }
-  }
-
-  async credit(
-    txStatus: TransactionStatus,
-    value: number,
-    receiver: User,
-  ): Promise<number> {
-    if ((txStatus = TransactionStatus.pending)) {
-      const newBal = receiver.walletBalance + value;
-      receiver.walletBalance = newBal;
-      return newBal;
-    }
-  }
+  async verifySend(transaction: Transaction) {}
 }
