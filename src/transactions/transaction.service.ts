@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Transaction,
   TransactionStatus,
@@ -6,6 +6,7 @@ import {
 } from './transactions.model';
 import { nanoid } from 'nanoid';
 import { User } from 'src/users/users.models';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class TransactionService {
@@ -32,22 +33,49 @@ export class TransactionService {
     this.Transactions.push(newTransaction);
   }
 
-  async findSingleTransaction(transactionId: string): Promise<Transaction> {
-    const tx = await this.Transactions.find[transactionId];
+  findSingleTransaction(transactionId: string) {
+    const tx = this.Transactions.find(
+      (transaction) => transaction.id === transactionId,
+    );
+    if (!tx) {
+      throw new NotFoundException();
+    }
     return tx;
   }
 
-  async findAllTransactions(): Promise<Transaction[]> {
+  findAllTransactions() {
     return [...this.Transactions];
   }
 
+  //First Operation performed when a credit tx is initiated
+  sendAsset(
+    sender: User,
+    receiver: User,
+    value: number,
+    date: Date,
+  ): Transaction {
+    const transactionId = nanoid();
+    const creditTransaction = new Transaction(
+      transactionId,
+      TransactionType.credit,
+      value,
+      date,
+      TransactionStatus.pending,
+      sender,
+      receiver,
+    );
+    this.Transactions.push(creditTransaction);
+    console.log('Transaction created');
+    return creditTransaction;
+  }
+
   async debit(
-    transactionId: number,
+    transactionId: string,
     txStatus: TransactionStatus,
     value: number,
     sender: User,
   ): Promise<number> {
-    const tx = await this.Transactions.find[transactionId];
+    const tx = await this.findSingleTransaction(transactionId);
     if (!tx) {
       console.error('Transaction Not Found');
     } else if (
@@ -64,6 +92,7 @@ export class TransactionService {
       {
         const newBal = (await sender.walletBalance) - value;
         sender.walletBalance = newBal;
+        console.log('Sender Debited');
         return sender.walletBalance;
       }
     }
@@ -79,30 +108,15 @@ export class TransactionService {
     if (!tx) {
       console.error('Transaction Not Found');
     } else if (tx && txStatus === TransactionStatus.pending) {
-      const newBal = receiver.walletBalance + value;
+      const newBal = (await receiver.walletBalance) + value;
       receiver.walletBalance = newBal;
-      return receiver.walletBalance;
+      console.log('Receiver Credited');
+      return (txStatus = TransactionStatus.successful);
     }
   }
 
-  sendAsset(
-    sender: User,
-    receiver: User,
-    value: number,
-    date: Date,
-  ): Transaction {
-    const transactionId = nanoid();
-    const trnsDate = new Date();
-    const creditTransaction = new Transaction(
-      transactionId,
-      TransactionType.credit,
-      value,
-      trnsDate,
-      TransactionStatus.pending,
-      sender,
-      receiver,
-    );
-    return creditTransaction;
+  verifySend(transactionId: string): TransactionStatus {
+    const tx = this.Transactions.find((tx) => tx.id === transactionId);
+    return tx.status;
   }
-  async verifySend(transaction: Transaction) {}
 }

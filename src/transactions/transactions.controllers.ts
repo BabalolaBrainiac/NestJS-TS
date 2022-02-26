@@ -1,4 +1,10 @@
-import { Controller, Get, Post, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Transaction } from './transactions.model';
 import { TransactionService } from './transaction.service';
 import { TransactionPayload } from './verify.transaction.dto';
@@ -10,7 +16,15 @@ export class TransactionController {
 
   @Post('send')
   async sendMoney(@Request() req: TransactionPayload) {
-    const { id, status, sender, receiver, value } = req;
-    return id;
+    const { sender, receiver, value, date } = req;
+    const creditTx = await this.transactionService.sendAsset(
+      sender,
+      receiver,
+      value,
+      new Date(),
+    );
+    if (!creditTx) {
+      throw new UnauthorizedException();
+    }
   }
 }
