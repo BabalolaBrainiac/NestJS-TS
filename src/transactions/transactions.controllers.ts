@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Post,
   Request,
   UnauthorizedException,
@@ -14,9 +15,24 @@ import { send } from 'process';
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
+  //Find Single Transaction
+  @Get(':transactionId')
+  findTransaction(@Param('transactionId') txId: string): Transaction {
+    const tx = this.transactionService.findSingleTransaction(txId);
+    return tx;
+  }
+
+  //Return all Transactions
+  @Get('list')
+  findAll(): Transaction[] {
+    const transactions = this.transactionService.findAllTransactions();
+    return transactions;
+  }
+
+  //Initiate Send Transaction
   @Post('send')
-  async sendMoney(@Request() req: TransactionPayload) {
-    const { sender, receiver, value, date } = req;
+  async sendMoney(@Param() params: TransactionPayload) {
+    const { id, sender, receiver, value, date } = params;
     const creditTx = await this.transactionService.sendAsset(
       sender,
       receiver,
@@ -25,6 +41,21 @@ export class TransactionController {
     );
     if (!creditTx) {
       throw new UnauthorizedException();
+    } else {
+      const isDebited = await this.transactionService.debit(
+        creditTx.id,
+        creditTx.status,
+        creditTx.value,
+        creditTx.sender,
+      );
+      const isCredited = await this.transactionService.credit(
+        creditTx.id,
+        creditTx.status,
+        creditTx.value,
+        creditTx.receiver,
+      );
+      if (isCredited && isDebited == true) {
+      }
     }
   }
 }

@@ -47,6 +47,17 @@ export class TransactionService {
     return [...this.Transactions];
   }
 
+  async updateTransaction(transactionId: string, updatedStatus: TransactionStatus, updatedType: TransactionType): Promise<Transaction> {
+    const tx = await this.findSingleTransaction(transactionId)
+    if (!tx) {
+      throw new NotFoundError('Transaction Not Found')
+    } else {
+      
+
+    }
+    return tx
+  }
+
   //First Operation performed when a credit tx is initiated
   sendAsset(
     sender: User,
@@ -74,16 +85,19 @@ export class TransactionService {
     txStatus: TransactionStatus,
     value: number,
     sender: User,
-  ): Promise<number> {
+  ): Promise<boolean> {
+    let isdebited = false;
     const tx = await this.findSingleTransaction(transactionId);
     if (!tx) {
-      console.error('Transaction Not Found');
+      throw new NotFoundError('Transaction Not Found');
+      return isdebited;
     } else if (
       tx &&
       txStatus === TransactionStatus.pending &&
       sender.walletBalance < value
     ) {
-      console.error('Insufficient Sender Funds');
+      console.error('Insufficient Funds');
+      return isdebited;
     } else if (
       tx &&
       tx.status === TransactionStatus.pending &&
@@ -92,31 +106,44 @@ export class TransactionService {
       {
         const newBal = (await sender.walletBalance) - value;
         sender.walletBalance = newBal;
+        isdebited = true;
         console.log('Sender Debited');
-        return sender.walletBalance;
+        return isdebited;
       }
     }
   }
 
   async credit(
-    transactionId: number,
+    transactionId: string,
     txStatus: TransactionStatus,
     value: number,
     receiver: User,
-  ): Promise<number> {
-    const tx = await this.Transactions.find[transactionId];
+  ): Promise<boolean> {
+    let isCredited = false;
+    const tx = await this.findSingleTransaction(transactionId);
     if (!tx) {
-      console.error('Transaction Not Found');
+      throw new NotFoundError('Transaction Not Found');
     } else if (tx && txStatus === TransactionStatus.pending) {
       const newBal = (await receiver.walletBalance) + value;
       receiver.walletBalance = newBal;
+      isCredited = true;
       console.log('Receiver Credited');
-      return (txStatus = TransactionStatus.successful);
+      return isCredited;
     }
   }
 
   verifySend(transactionId: string): TransactionStatus {
     const tx = this.Transactions.find((tx) => tx.id === transactionId);
     return tx.status;
+  }
+
+  veryifyCreditandDebit(
+    creditStatus: boolean,
+    debitStatus: boolean,
+    transactionStatus: TransactionStatus,
+  ): TransactionStatus {
+    if (creditStatus && debitStatus = true) {
+      return transactionStatus = transactionStatus.
+    }
   }
 }

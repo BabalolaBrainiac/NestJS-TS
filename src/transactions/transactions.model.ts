@@ -15,11 +15,11 @@ export enum TransactionType {
 export class Transaction {
   constructor(
     public readonly id: string,
-    private readonly type: TransactionType,
-    private readonly value: number,
-    private readonly date: Date,
+    public readonly type: TransactionType,
+    public readonly value: number,
+    public readonly date: Date,
     public readonly status: TransactionStatus,
-    private readonly sender: User,
-    private readonly receiver: User,
+    public readonly sender: User,
+    public readonly receiver: User,
   ) {}
 }
