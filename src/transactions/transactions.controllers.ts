@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Post,
+  Redirect,
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -31,6 +32,7 @@ export class TransactionController {
 
   //Initiate Send Transaction
   @Post('send')
+  @Redirect('localhost:3000/transaction/verify:transactionId', 302)
   async sendMoney(@Param() params: TransactionPayload) {
     const { id, sender, receiver, value, date } = params;
     const creditTx = await this.transactionService.sendAsset(
